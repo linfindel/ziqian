@@ -4,7 +4,6 @@ fetch("accepted_tags.txt")
 .then(response => response.text())
 .then(data => {
   fileContent = data;
-  console.log(fileContent);
 
   getLocation();
   setTimeout(() => {
@@ -30,13 +29,12 @@ function generateOverpassQuery(radius, lat, lon) {
     }
   });
 
-  // Create the base query
   const query = `
     [out:json];
     (
-      ${tags.map(tag => `node[${tag}]["access"!="no"]["access"!="private"]["garden:type"!="residential"]["garden:type"!="private"](around:${radius}, ${lat}, ${lon});`).join('\n  ')}
-      ${tags.map(tag => `way[${tag}]["access"!="no"]["access"!="private"]["garden:type"!="residential"]["garden:type"!="private"](around:${radius}, ${lat}, ${lon});`).join('\n  ')}
-      ${tags.map(tag => `relation[${tag}]["access"!="no"]["access"!="private"]["garden:type"!="residential"]["garden:type"!="private"](around:${radius}, ${lat}, ${lon});`).join('\n  ')}
+      ${tags.map(tag => `node[${tag}](around:${radius}, ${lat}, ${lon});`).join('\n  ')}
+      ${tags.map(tag => `way[${tag}](around:${radius}, ${lat}, ${lon});`).join('\n  ')}
+      ${tags.map(tag => `relation[${tag}](around:${radius}, ${lat}, ${lon});`).join('\n  ')}
     );
     out body;
     >;
@@ -78,8 +76,6 @@ function setPosition(position) {
 }
 
 async function getPOIs(lat, lon, radius = 200) {
-  console.log(generateOverpassQuery(radius, lat, lon));
-
   const overpassUrl = 'https://overpass-api.de/api/interpreter';
   const query = generateOverpassQuery(radius, lat, lon);
 
